@@ -1,5 +1,5 @@
 <?php require( TEMPLATE_PATH . "/include/header.php" ); ?>
-<?php session_start(); ?>
+<?php //session_start(); ?>
 
     <?php require( TEMPLATE_PATH . "/include/adminHeader.php" ); // On insert le adminHeader ?>
 

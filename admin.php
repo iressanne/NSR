@@ -193,7 +193,7 @@ function register() {
         // Execution de la requete SQL du formulaire register.php
         try {
             // On va chercher les infos du formulaire
-            $sql = "INSERT INTO users (user_first_name, user_last_name, user_username, user_password, user_email, user_role) VALUES (:user_first_name, :user_last_name, :user_username, :user_password, :user_email, :user_role)";
+            $sql = "INSERT INTO users (user_first_name, user_last_name, user_username, user_password, user_email) VALUES (:user_first_name, :user_last_name, :user_username, :user_password, :user_email)";
             $stmt = $conn->prepare( $sql );
             
             // On joint les paramêtres aux infos
@@ -208,7 +208,7 @@ function register() {
             $stmt->bindParam( ':user_email', $_REQUEST[ 'user_email' ] );
     
             // On définit par défaut le rôle des nouveaux inscrits en tant qu'utilisateur
-            $stmt->bindParam( ':user_role', 'user' );
+            // $stmt->bindParam( ':user_role', 'user' );
             
             // On execute l'enregistrement
             $stmt->execute();

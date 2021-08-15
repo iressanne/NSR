@@ -61,24 +61,29 @@ if( !empty( $tags ) ) {
 
 <header>
 
-<?php if( !empty( $title ) ) echo "<a href='index.php'><h1>$title</h1></a>"; ?>
-<?php $logo = $infos_row['logo']; // AFFICHAGE DU LOGO
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <div>
+                    <?php $logo = $infos_row['logo']; // AFFICHAGE DU LOGO
 
-                if( !empty( $logo ) ): ?>
+                        if( !empty( $logo ) ): ?>
 
-            <img src="<?php echo $logo; ?>" alt="<?php echo !empty( $title ) ? $title : null ?>">
-            <?php endif; ?>
+                        <img src="<?php echo $logo; ?>" alt="<?php echo !empty( $title ) ? $title : null ?>">
+                         <?php endif; ?>
+                <a class="navbar-brand" href="index.php"><?php echo !empty( $title ) ? $title : "NSR"; ?></a>
+                 </div>
+           
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.php">À propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php?action=archive">Archives</a>
+                    </li>
+                </ul>
 
-<?php $description_site = $infos_row['description_site']; // AFFICHAGE DU ABOUT
+                </div>
+            </nav>
 
-                if( !empty( $description_site ) ) : ?>
-
-            <details>
-                <summary>INFOS</summary>
-                <p><?php echo $description_site; ?></p>
-            </details>
-
-            <?php endif; ?>
-
-</header>
+        </header>
     
