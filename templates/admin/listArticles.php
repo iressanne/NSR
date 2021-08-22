@@ -102,7 +102,7 @@
 
             <tr onclick="location='admin.php?action=editUser&amp;userId=<?php echo $tr->id ?>'"<?php if( $user->user_username == $tr->user_username ) echo ' class="table-primary"' ?>>
                 <td><?php echo $tr->user_username ?></td>
-                <td><?php echo $tr->user_role ?></td>
+                <td><?php echo $tr->user_role == "" ? "user" : $tr->user_role ?></td>
             </tr>
 
         <?php } ?>
