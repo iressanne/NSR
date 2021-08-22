@@ -1,5 +1,3 @@
-<main>
-
 <?php
 
 // Connexion à la base de données
@@ -8,10 +6,14 @@ session_start();
 
 // Définit les ISSET
 $action = isset( $_GET['action'] ) ? $_GET['action'] : "";
-$username = isset( $_SESSION['user_username'] ) ? $_SESSION['user_username'] : "";
+$user_username = isset( $_SESSION['user_username'] ) ? $_SESSION['user_username'] : "";
+
+$sort = isset( $_GET['sort'] ) && isset( $_GET['sort'] ) != "id" ? "post_".$_GET['sort'] : "id";
+$order = isset( $_GET['order'] ) ? $_GET['order'] : "";
+$order = $order != "" ? $order : ( $sort == "id" ? "DESC" : "ASC" );
 
 // Renvoie vers la page login dans le cas ou l'utilisateur est déconnecté
-if ( $action != "login" && $action != "logout" && $action != "register" && !$username ) {
+if ( $action != "login" && $action != "logout" && $action != "register" && !$user_username ) {
 
     login();
     exit;
@@ -30,7 +32,7 @@ switch ( $action ) {
         register();
         break;
     case 'newArticle':
-        newArticle();
+        newArticle( $user_username );
         break;
     case 'editArticle':
         editArticle();
@@ -38,8 +40,11 @@ switch ( $action ) {
     case 'deleteArticle':
         deleteArticle();
         break;
+    case 'editUser':
+        editUser();
+        break;
     default:
-        listArticles();
+        listArticles( $order, $sort );
 }
 
 // Fonction d'encodage de mot de passe
@@ -118,7 +123,6 @@ function login() {
 
                             $id = $row[ "id" ];
                             $username = $row[ "user_username" ];
-                            var_dump($username);
 
                             $decrypted = stringEncryption( 'decrypt', $row[ "user_password" ] );
                             $decrypted = password_hash( trim( $decrypted ), PASSWORD_DEFAULT );
@@ -233,10 +237,13 @@ function register() {
 }
 
 
-function newArticle() {
+function newArticle( $user_username ) {
+
+    // On récupère l'objet User si le username existe
+    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
 
     $results = array();
-    $results['pageTitle'] = "New Article";
+    $results['pageTitle'] = "Nouvel article";
     $results['formAction'] = "newArticle";
 
     if ( isset( $_POST['saveChanges'] ) ) {
@@ -244,7 +251,7 @@ function newArticle() {
         // Création d'un nouvel article
         $article = new Article;
         $article->storeFormValues( $_POST );
-        $article->insert();
+        $article->insert( $user_username );
         header( "Location: admin.php?status=changesSaved" );
 
     } elseif ( isset( $_POST['cancel'] ) ) {
@@ -264,8 +271,11 @@ function newArticle() {
 
 function editArticle() {
 
+    // On récupère l'objet User si le username existe
+    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
+
     $results = array();
-    $results['pageTitle'] = "Edit Article";
+    $results['pageTitle'] = "Editer un article";
     $results['formAction'] = "editArticle";
 
     if ( isset( $_POST['saveChanges'] ) ) {
@@ -279,7 +289,7 @@ function editArticle() {
         // Mise à jour de l'article
         $article->storeFormValues( $_POST );
         $article->update();
-        header( "Location: admin.php?status=changesSaved" );
+        header( "Location: admin.php?status=articleChangesSaved" );
 
     } elseif ( isset( $_POST['cancel'] ) ) {
 
@@ -308,25 +318,91 @@ function deleteArticle() {
 }
 
 
-function listArticles() {
+function listArticles( $order, $sort ) {
+
+    // On récupère l'objet User si le username existe
+    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
+
     $results = array();
-    $data = Article::getList();
+
+    if ( $user->user_role == "admin" ) {
+
+        $data = User::getList();
+        $results['users'] = $data['users'];
+        $results['totalUsers'] = $data['totalUsers'];
+
+    }
+
+    $userList = $user->user_role ? "" : $user->user_username;
+
+    $data = Article::getList( 100000, $sort, $order, $userList );
     $results['articles'] = $data['results'];
     $results['totalRows'] = $data['totalRows'];
-    $results['pageTitle'] = "All Articles";
+    $results['pageTitle'] = "Tous vos articles";
 
     if ( isset( $_GET['error'] ) ) {
         if ( $_GET['error'] == "articleNotFound" ) $results['errorMessage'] = "Error: Article non trouvé.";
     }
 
     if ( isset( $_GET['status'] ) ) {
-        if ( $_GET['status'] == "changesSaved" ) $results['statusMessage'] = "Vos modifications ont bien été enregistrées.";
-        if ( $_GET['status'] == "articleDeleted" ) $results['statusMessage'] = "Article supprimé.";
+        if ( $_GET['status'] == "articleChangesSaved" ) $results['statusMessage'] = "<div class='alert alert-success' role='alert'>Vos modifications ont bien été enregistrées.</div>";
+        if ( $_GET['status'] == "articleDeleted" ) $results['statusMessage'] = "<div class='alert alert-warning' role='alert'>Article supprimé.</div>";
+        if ( $_GET['status'] == "userChangesSaved" ) $results['userStatusMessage'] = "<div class='alert alert-success' role='alert'>Vos modifications ont bien été enregistrées.</div>";
     }
 
     require( TEMPLATE_PATH . "/admin/listArticles.php" );
+
+}
+
+
+function editUser() {
+
+    // On récupère l'objet User si le username existe
+    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
+
+    $results = array();
+    $results[ 'pageTitle' ] = "Editer";
+    $results[ 'formAction' ] = "editUser";
+
+    if ( isset( $_POST[ 'saveChanges' ] ) ) {
+
+        // Redirection vers user non trouvé si user inexistant
+        if ( !$toEdit = User::getById( (int)$_POST['userId'] ) ) {
+            header( "Location: admin.php?error=articleNotFound" );
+            return;
+        }
+        
+        // Mise à jour du user
+        $toEdit->storeFormValues( $_POST );
+        $toEdit->update( $_POST );
+        header( "Location: admin.php?status=userChangesSaved" );
+
+    } elseif ( isset( $_POST[ 'saveOwn' ] ) ) {
+
+        // Redirection vers user non trouvé si user inexistant
+        if ( !$toEdit = User::getById( (int)$_POST['userId'] ) ) {
+            header( "Location: admin.php?error=articleNotFound" );
+            return;
+        }
+        
+        // Mise à jour du user
+        $toEdit->storeFormValues( $_POST );
+        $toEdit->updateOwn( $_POST );
+        header( "Location: admin.php?status=userChangesSaved" );
+
+    } elseif ( isset( $_POST[ 'cancel' ] ) ) {
+
+        // Si l'utilisateur annule, alors redirection vers admin.php
+        header( "Location: admin.php" );
+
+    } else {
+
+        // Contrairement à newUser, on vient afficher le formulaire contenant les éléments du user sélectionné
+        $results[ 'user' ] = User::getById( ( int )$_GET[ 'userId' ] );
+
+        require( TEMPLATE_PATH . "/admin/editUser.php" );
+    }
+
 }
 
 ?>
-
-</main>

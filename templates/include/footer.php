@@ -11,5 +11,7 @@
            
 </footer>
 
+<script src='assets/js/script.js'></script>
+
     <?php unset( $conn ); ?></body>
 </html>

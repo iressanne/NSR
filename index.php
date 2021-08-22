@@ -1,11 +1,17 @@
 <?php
 
+// Initialize the session
+session_start();
+
 require( "config.php" );
 $action = isset( $_GET['action'] ) ? $_GET['action'] : "";
+$sort = isset( $GET['sort'] ) ? "post".$_GET['sort'] : "post_date";
+$order = isset( $_GET['order'] ) ? $_GET['order'] : "";
+$order = $order != "" ? $order : ( $sort == "post_date" ? "DESC" : "ASC" );
 
 switch ( $action ) {
   case 'archive':
-    archive();
+    archive( $sort, $order );
     break;
   case 'viewArticle':
     viewArticle();
@@ -14,9 +20,9 @@ switch ( $action ) {
     homepage();
 }
 
-function archive() {
+function archive( $sort, $order ) {
   $results = array();
-  $data = Article::getList();
+  $data = Article::getList( 100000, $sort, $order );
   $results['articles'] = $data['results'];
   $results['totalRows'] = $data['totalRows'];
   $results['pageTitle'] = "Article Archive | Widget News";
@@ -37,10 +43,17 @@ function viewArticle() {
 
 function homepage() {
   $results = array();
-  $data = Article::getList( HOMEPAGE_NUM_ARTICLES );
+
+  // On liste les articles
+  $data = Article::getList( ARTICLES_LIMIT );
   $results['articles'] = $data['results'];
-  $results['totalRows'] = $data['totalRows'];
-  $results['pageTitle'] = "Widget News";
+ 
+
+  // on liste les auteurs
+  $data = User::getTop( ARTICLES_LIMIT );
+  $results['users'] = $data;
+
+
   require( TEMPLATE_PATH . "/homepage.php" );
 }
 

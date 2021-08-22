@@ -1,8 +1,5 @@
 <?php
     include "function/main.php";
-
-    // Initialize the session
-    // session_start();
     
     include "function/connexion.php";
 
@@ -23,7 +20,7 @@
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -54,7 +51,10 @@ if( !empty( $tags ) ) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
  
 <!-- Appel de la feuille du style du site -->
-<link rel="stylesheet" href="assets/style.css">  
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!-- On appelle la bibliothèque de l'éditeur tinymce -->
+<script src='assets/js/tinymce/tinymce.min.js'></script>
 
 </head>
 <body>
@@ -70,20 +70,25 @@ if( !empty( $tags ) ) {
 
                         <img src="<?php echo $logo; ?>" alt="<?php echo !empty( $title ) ? $title : null ?>">
                          <?php endif; ?>
-                <a class="navbar-brand" href="index.php"><?php echo !empty( $title ) ? $title : "NSR"; ?></a>
-                 </div>
-           
-                <ul class="navbar-nav mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.php">À propos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php?action=archive">Archives</a>
-                    </li>
-                </ul>
+                    <a class="navbar-brand" href="index.php"><?php echo !empty( $title ) ? $title : "NSR"; ?></a>
+                </div>
+
+                <div>
+                    <ul class="navbar-nav mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.php">À propos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.php?action=archive">Archives</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex" method="get" action="search.php">
+                        <input type="text" class="form-control me-2" placeholder="..." name="search" aria-label="Search" required>
+                        <input type="submit" class="btn btn-outline-success" value="Recherche" name="submit"></input>
+                    </form>
+                </div>
 
                 </div>
             </nav>
 
         </header>
-    

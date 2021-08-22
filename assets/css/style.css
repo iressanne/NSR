@@ -1,0 +1,242 @@
+:root {
+    --container-height: calc(90vh - 5rem);
+    --container-width: 80vw;
+    --homepage-figure: calc(var(--container-width) / 3);
+}
+
+/* GENERAL */
+
+html {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    background-color: lavender;
+}
+
+header, footer {
+    /* background: #f00; */
+    height: 5rem;
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+a {
+    text-decoration: none;
+    color: brown;
+}
+
+button a, th a {
+    text-decoration: none;
+    color: inherit;
+}
+
+hr {
+    width: 100%;
+    border: .1px solid #000;
+    opacity: 1;
+    margin: 2rem 0;
+}
+
+/* HEADER */
+
+header {
+    /* position: fixed; */
+    top: 0;
+    left: 0;
+}
+header a {
+    text-decoration: none;
+    color: initial;
+}
+header h1 {
+    display: inline-block;
+    margin: 0;
+}
+header img {
+    height: 40px;
+    margin: 0 1rem;
+}
+.navbar {
+    width: 100%;
+}
+
+.navbar form {
+    padding: 0;
+    background: none;
+}
+
+.navbar form .me-2 {
+    margin-right: .2rem !important;
+}
+
+.navbar ul {
+    margin-right: .5rem;
+}
+
+.navbar .container-fluid > div {
+    display: flex;
+}
+
+footer .navbar .container-fluid {
+    justify-content: center;
+}
+
+/* FOOTER */
+
+footer {
+    /* position: absolute; */
+    bottom: 0;
+    justify-content: center;
+}
+
+footer ul {
+    display: flex;
+}
+
+footer ul li {
+    list-style: none;
+    margin: 0 1rem;
+}
+
+footer ul li a {
+    text-decoration: none;
+    color: initial;
+}
+
+/* MAIN */
+
+main {
+    padding: 2rem 5rem;
+    min-height: var(--container-height);
+}
+
+/* FORM */
+
+form {
+    background: rgba( 120, 120, 120, .3 );
+    padding: 1rem;
+    border-radius: 1rem;
+    width: max-content;
+    text-align: center;
+}
+
+form * {
+    margin: 0;
+}
+
+/* form > div:not(input + div) {
+    margin-top: 1rem;
+} */
+
+form p {
+    display: flex;
+}
+
+form p > *:not( :last-child ) {
+    margin-right: .5rem;
+}
+
+form img {
+    width: 100%;
+}
+
+.form-label {
+    margin: .5rem 0;
+}
+
+/* HOMEPAGE */
+
+.homepage {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.homepage__overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1rem;
+}
+
+.homepage__overview article {
+    width: var(--homepage-figure);
+}
+
+.homepage__overview figure {
+    width: var(--homepage-figure);
+    height: var(--homepage-figure);
+}
+
+.homepage__overview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.homepage__overview#top {
+    width: 50%;
+}
+
+.homepage__overview .card {
+    text-align: center;
+}
+
+
+
+/* ADMIN */
+
+.admin {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 1rem;
+}
+
+.admin .articles {
+    grid-column: span 2;
+}
+
+.admin tr {
+    cursor: pointer;
+}
+
+.admin .card {
+    width: 18rem;
+    grid-column: 4;
+    margin-left: auto;
+    height: max-content;
+}
+
+.admin .post {
+    grid-column: span 3;
+}
+
+.admin .post form {
+    display: grid;
+    grid-template-columns: 1fr 50% 1fr;
+    grid-template-rows: 60vh 1fr;
+    width: 100%;
+    grid-gap: 1rem;
+}
+
+.admin form .tox-tinymce {
+    height: calc(100% - 3rem) !important;
+}
+
+.admin form > div:last-child {
+    grid-column: span 3;
+}
+
+.card-img-top {
+    margin: 10%;
+    width: 80% !important;
+    border-radius: 50%;
+    object-fit: cover;
+}
