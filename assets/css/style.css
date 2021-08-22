@@ -126,6 +126,7 @@ form {
     border-radius: 1rem;
     width: max-content;
     text-align: center;
+    min-width: 400px;
 }
 
 form * {
@@ -240,9 +241,15 @@ form img {
     border-radius: 50%;
     object-fit: cover;
 }
-#user_cover + img {
+
+#user_cover + img:not( .hidden ) {
     margin: 5%;
-    width: 50% !important;
+    width: 250px;
+    height: 250px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+#cover_preview.hidden {
+    display: none;
 }

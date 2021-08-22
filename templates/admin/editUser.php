@@ -34,7 +34,8 @@
 
             <div>
                 <label for="user_cover" class="form-label">Photo de couverture</label>
-                <input type="file" name="user_cover" class="form-control" id="user_cover" value="<?php !$results['user']->user_cover ? "user.png" : $results['user']->user_cover ?>">
+                <input type="file" name="user_cover" class="form-control" id="user_cover" value="<?php !$results['user']->user_cover ? "user.png" : $results['user']->user_cover ?>" onchange="imgPreview(this)">
+                <img id="cover_preview" class="hidden" src="#" alt="...">
                 <p><small><strong>Note:</strong> Uniquement des .jpg, .jpeg, .gif ou .png d'une taille max de 5 MB.</small></p>
             </div>
 
@@ -50,8 +51,8 @@
             <div>
                 <label for="user_role" class="form-label">Rôle</label>
                 <select class="form-select" name="user_role" aria-label="Rôle l'utilisater" onchange="selectChange(this)"<?php if ( isYou( $user, $results ) ) echo " disabled" ?>>
-                    <option value="admin"<?php if( $results[ 'user' ]->user_role == "admin") echo " selected" ?>>Admin</option>
-                    <option value="author"<?php if( $results[ 'user' ]->user_role == "author") echo " selected" ?>>Auteur</option>
+                    <option value="admin"<?php if( $results[ 'user' ]->user_role == "admin" ) echo " selected" ?>>Admin</option>
+                    <option value="author"<?php if( $results[ 'user' ]->user_role == "author" ) echo " selected" ?>>Auteur</option>
                     <option value="user"<?php if( $results[ 'user' ]->user_role == "user" || $results[ 'user' ]->user_role == "" ) echo " selected" ?>>Utilisateur</option>
                 </select>
             </div>
@@ -88,7 +89,8 @@
 
         <template>
             <label for="user_cover" class="form-label">Photo de couverture</label>
-            <input type="file" name="user_cover" class="form-control" id="user_cover" required>
+            <input type="file" name="user_cover" class="form-control" id="user_cover" required onchange="imgPreview(this)">
+            <img id="cover_preview" class="hidden" src="#" alt="...">
             <p><small><strong>Note:</strong> Uniquement des .jpg, .jpeg, .gif ou .png d'une taille max de 5 MB.</small></p>
         </template>
 
@@ -117,7 +119,7 @@
             }
 
             // On créer une fonction pour aller chercher une nouvelle image via un input file
-            let newFile = function() {
+            const newFile = function() {
 
                 // On va chercher le tag template n°2
                 let template = document.getElementsByTagName( "template" )[ 1 ];
@@ -127,6 +129,36 @@
                 parentDiv.innerHTML = "";
                 // On vient insérer dans le parent le contenu du template
                 parentDiv.appendChild( clone );
+
+            }
+
+            const imgPreview = function( element ) {
+
+                // On déclare l'image de preview
+                const coverPreview = document.querySelector( "#cover_preview" )
+                // On vient checher la nouvelle image insérée dans l'input
+                const img = element.files[0];
+
+                // Si l'image existe alors...
+                if ( img ) {
+
+                    // On vient déclarer un nouveau FileReader() (Classe javascript)
+                    const fileReader = new FileReader();
+
+                    // Avec le FileReader on vient ouvrir l'image
+                    fileReader.readAsDataURL( img );
+
+                    // Si l'ouverture de l'image à fonctionné alors on lance une nouvelle fonction
+                    fileReader.addEventListener( "load", function () {
+
+                        // On remplace la source de l'image par le résultat
+                        coverPreview.src = this.result;
+                        // On vient retirer la class .hidden à l'image
+                        coverPreview.classList.remove( "hidden" );
+
+                    });
+
+                }
 
             }
         

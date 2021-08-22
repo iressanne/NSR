@@ -29,12 +29,13 @@
 
       <div>
         <label for="post_content" class="form-label">Contenu</label>
-        <textarea name="post_content" class="form-control" id="post_content"><?php if( $content = $results['article']->post_content ) echo htmlspecialchars( $content )?></textarea>
+        <textarea name="post_content" class="form-control" id="post_content"><?php if( $content = $results['article']->post_content ) echo htmlspecialchars( $content ) ?></textarea>
       </div>
 
       <div>
         <label for="post_cover" class="form-label">Photo de couverture</label>
-        <input type="file" name="post_cover" class="form-control" id="post_cover" value="<?php echo htmlspecialchars( $results['article']->post_cover )?>">
+        <input type="file" name="post_cover" class="form-control" id="post_cover" value="<?php if( $cover = $results['article']->post_cover ) echo htmlspecialchars( $results['article']->post_cover ) ?>" required onchange="imgPreview(this)">
+        <img id="cover_preview" class="hidden" src="#" alt="...">
         <p><small><strong>Note:</strong> Uniquement des .jpg, .jpeg, .gif ou .png d'une taille max de 5 MB.</small></p>
       </div>
 
@@ -56,26 +57,27 @@
 
     <template>
       <label for="post_cover" class="form-label">Photo de couverture</label>
-      <input type="text" name="post_cover" class="form-control" id="post_cover" value="<?php echo htmlspecialchars( $results['article']->post_cover ); ?>" required disabled>
+      <input type="text" name="post_cover" class="form-control" id="post_cover" value="<?php echo htmlspecialchars( $results['article']->post_cover ); ?>" disabled>
       <img src="<?php echo !strpos( $results['article']->post_cover, "http" ) ? UPLOAD_PATH . $results['article']->post_cover : $results['article']->post_cover; ?>" alt="<?php echo $results['article']->post_cover; ?>">
       <p><button class="btn btn-secondary btn-sm" onclick="newFile()">Télécharger une nouvelle image</button></p>
     </template>
 
     <template>
       <label for="post_cover" class="form-label">Photo de couverture</label>
-      <input type="file" name="post_cover" class="form-control" id="post_cover" required>
+      <input type="file" name="post_cover" class="form-control" id="post_cover" required onchange="imgPreview(this)">
+      <img id="cover_preview" class="hidden" src="#" alt="...">
       <p><small><strong>Note:</strong> Uniquement des .jpg, .jpeg, .gif ou .png d'une taille max de 5 MB.</small></p>
     </template>
 
     <script>
 
-    // On va chercher l'input #post_cover
-    let fileSelect = document.querySelector( '#post_cover' );
+      // On va chercher l'input #post_cover
+      let fileSelect = document.querySelector( '#post_cover' );
       // On va chercher la valeur par défaut de l'input
       let fileValue = fileSelect.defaultValue;
       // On sélection l'élément parent
       let parentDiv = fileSelect.parentElement;
-
+      
 
       // On vérifie si fileValue n'est pas null ou vide
       if ( fileValue !== null || fileValue !== "" ) {
@@ -104,9 +106,45 @@
         parentDiv.appendChild( clone );
 
       }
+
+   
+      
     </script>
 
 <?php } ?>
+
+<script>
+  
+     const imgPreview = function( element ) {
+
+// On déclare l'image de preview
+const coverPreview = document.querySelector( "#cover_preview" )
+// On vient checher la nouvelle image insérée dans l'input
+const img = element.files[ 0 ];
+
+// Si l'image existe alors...
+if ( img ) {
+
+  // On vient déclarer un nouveau FileReader() (Classe javascript)
+  const fileReader = new FileReader();
+
+  // Avec le FileReader on vient ouvrir l'image
+  fileReader.readAsDataURL( img );
+
+  // Si l'ouverture de l'image à fonctionné alors on lance une nouvelle fonction
+  fileReader.addEventListener( "load", function () {
+
+    // On remplace la source de l'image par le résultat
+    coverPreview.src = this.result;
+    // On vient retirer la class .hidden à l'image
+    coverPreview.classList.remove( "hidden" );
+
+  });
+
+}
+
+}
+</script>
 
   </aside>
 
