@@ -83,7 +83,7 @@
         <template>
             <label for="user_cover" class="form-label">Photo de couverture</label>
             <input type="text" name="user_cover" class="form-control" id="user_cover" value="<?php echo htmlspecialchars( $results['user']->user_cover ); ?>" required disabled>
-            <img src="<?php echo !strpos( $results['user']->user_cover, "http" ) ? UPLOAD_PATH . "users/" . $results['user']->user_cover : $results['user']->user_cover; ?>" alt="<?php echo $results['user']->user_cover; ?>">
+            <img src="<?php echo !$results['user']->user_cover ? UPLOAD_PATH . "users/user.png" :  ( !strpos( $results['user']->user_cover, "http" ) ? UPLOAD_PATH . "users/" . $results['user']->user_cover : $results['user']->user_cover ); ?>" alt="<?php echo $results['user']->user_cover; ?>">
             <p><button class="btn btn-secondary btn-sm" onclick="newFile()">Télécharger une nouvelle image</button></p>
         </template>
 

@@ -116,7 +116,30 @@
 
     </aside>
 
-<?php } ?>        
+    <?php } else { ?>
+
+<aside>
+
+    <h2>Votre compte</h2>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Role</th>
+            </tr>
+        </thead>
+
+        <tr onclick="location='admin.php?action=editUser&amp;userId=<?php echo $user->id ?>'"<?php if( $user->user_username == $user->user_username ) echo ' class="table-primary"' ?>>
+            <td><?php echo $user->user_username ?></td>
+            <td><?php echo $user->user_role == "" ? "user" : $user->user_role ?></td>
+        </tr>
+
+</table>
+
+</aside>
+<?php } ?>
+   
 
 <?php require( TEMPLATE_PATH . "/include/adminHeader.php" ); // On insert le adminHeader ?>
 

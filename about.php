@@ -5,7 +5,7 @@
 
 <main>
 
-    <?php $description_site = $infos_row['description_site']; // AFFICHAGE DU ABOUT
+    <?php $description_site = $main->content; // AFFICHAGE DU ABOUT
 
     if( !empty( $description_site ) ) : ?>
 

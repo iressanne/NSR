@@ -84,6 +84,7 @@ class User {
   * @param int L'ID de l'utilisateur
   * @return User|false Retourne l'objet de l'utilisateur, ou un FALSE s'il n'a pas été trouvé ou s'il y a eu un problème.
   */
+  
 
   public static function getById( $id ) {
 
