@@ -1,22 +1,13 @@
 <?php
+
+    $main = Main::getInformations();
+    $logo = !strpos( $main->logo, "http" ) ? UPLOAD_PATH . $main->logo : $main->logo;
+    $title = $main->title;
+
     include "function/main.php";
-    
-    include "function/connexion.php";
 
-    $conn = OpenCon();
-    
-    $sql = "SELECT * FROM informations";
-
-    $result = $conn->query( $sql );
-
-    // ALLER CHERCHER UNE LIGNE EN PARTICULIER
-    $result->execute([1]);
-
-    // LA LIGNE D'INFORMATIONS
-    $infos_row = $result->fetch();
-
-    // SELECTION DU TITRE
-    $title = $infos_row['titre'];
+    // On récupère l'objet User si l'id existe
+    $user = isset( $_SESSION['id'] ) ? User::getById( $_SESSION['id'] ) : "";
 
 ?>
 <!DOCTYPE html>
@@ -26,20 +17,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php if( !empty( $title ) ) echo $title; ?></title>
+    <link rel="icon" href="<?php echo $logo ?>" />
 
     <meta name='keywords' content='<?php
 
 // AFFICHAGE DES TAGS
-$tags = $infos_row['tag']; // "blog, sport, batman"
+$tags = $main->tags; // "blog, sport, batman"
 
 if( !empty( $tags ) ) {
 
-    $exploded = explode( ', ', $tags ); // ["blog", "sport", "batman"]
-    $countTags = count( $exploded ); // = 3
+    $exploded = explode( ', ', $tags ); // On sépare chaque tags pour les mettre dans un Array (["blog", "sport", "batman"])
+    $countTags = count( $exploded ); // On fait le compte des tags (3)
+
     $i = 0;
+
     foreach ( $exploded as $tag ) {
+
         echo $tag;
-        if( ++$i !== $countTags ) { echo ", "; } 
+        if( ++$i !== $countTags ) echo ", ";
+
     }
 
 }
@@ -59,12 +55,18 @@ if( !empty( $tags ) ) {
 </head>
 <body>
 
+<?php if( $cover = $main->cover ) { ?>
+<figure id="background__cover">
+    <img src="<?php echo UPLOAD_PATH . $cover; ?>" alt="<?php echo $title; ?> background">
+</figure>
+<?php } ?>
+
 <header>
 
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <div class="container-fluid">
                     <div>
-                    <?php $logo = $infos_row['logo']; // AFFICHAGE DU LOGO
+                    <?php // AFFICHAGE DU LOGO
 
                         if( !empty( $logo ) ): ?>
 
@@ -92,3 +94,4 @@ if( !empty( $tags ) ) {
             </nav>
 
         </header>
+    

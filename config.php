@@ -15,6 +15,8 @@
     // On définit le nombre d'articles pour une liste réduite
     define( "ARTICLES_LIMIT", 3 );
     // On appelle d'avance les classes à utiliser
+
+    require( CLASS_PATH . "/Main.php" );
     require( CLASS_PATH . "/Article.php" );
     require( CLASS_PATH . "/User.php" );
 

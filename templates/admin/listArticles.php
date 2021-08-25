@@ -9,11 +9,19 @@
 
     <main class="admin">
 
+    <?php if( $user->user_role == "admin" || $user->user_role == "author" ) { ?>
+
         <aside class="articles">
 
             <h2><?php echo $results['pageTitle'] ?></h2>
 
-            <p><small class="text-muted"><?php echo $results['totalRows']?> article<?php echo ( $results['totalRows'] != 1 ) ? 's' : '' ?> au total</small></p>
+            <p><small class="text-muted">
+            <?php if( $results['totalRows'] > 0 ) { ?>
+                <?php echo $results['totalRows'] ?> article<?php echo ( $results['totalRows'] != 1 ) ? 's' : '' ?> au total
+            <?php } else { ?>
+                Vous n'avez pas encore écrit d'articles
+            <?php } ?>
+            </small></p>
 
             <?php if ( isset( $results['errorMessage'] ) ) { ?>
                     <div class="errorMessage"><?php echo $results['errorMessage'] ?></div>
@@ -22,6 +30,8 @@
             <?php if ( isset( $results['statusMessage'] ) ) { ?>
                     <div class="statusMessage"><?php echo $results['statusMessage'] ?></div>
             <?php } ?>
+
+        <?php if( $results['totalRows'] > 0 ) { ?>
 
             <table class="table table-hover">
                 <thead>
@@ -38,7 +48,7 @@
                         </th>
                         <?php if ( $user->user_role == "admin" ) { ?>
                         <th scope="col">
-                            <a href="./admin.php?sort=author&order=<?php echo $sort == "athor" && $order == "ASC" ? "DESC" : "ASC" ?>">
+                            <a href="./admin.php?sort=author&order=<?php echo $sort == "author" && $order == "ASC" ? "DESC" : "ASC" ?>">
                                 Auteur<?php if( $sort == "author" ) echo $orderArrow ?>
                             </a>
                         </th>
@@ -60,10 +70,14 @@
 
             </table>
 
+        <?php } ?>
+
             <a href="admin.php?action=newArticle" class="btn btn-primary btn-sm">Ajouter un article</a>
             <?php if ( $user->user_role == "admin" ) echo "<a href='admin.php?action=pinArticle' class='btn btn-secondary btn-sm'>Mettre en avant un article</a>"; ?>
 
         </aside>
+
+    <?php } ?>
 
 <?php if ( $user->user_role == "admin" ) { // Si la personne est Admin, on liste les Users ?>
 
@@ -85,16 +99,8 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th scope="col">
-                        <a href="./admin.php?sort=username<?php if( $sort == "username" && $order == "DESC" ) echo "&order=ASC" ?>">
-                            Nom<?php if( $sort == "username" ) echo $orderArrow ?>
-                        </a>
-                    </th>
-                    <th scope="col">
-                        <a href="./admin.php?sort=role<?php if( $sort == "role" && $order == "ASC" ) echo "&order=DESC" ?>">
-                            Role<?php if( $sort == "role" ) echo $orderArrow ?>
-                        </a>
-                    </th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Role</th>
                 </tr>
             </thead>
 
@@ -118,5 +124,4 @@
     </main>
 
 <?php require( TEMPLATE_PATH . "/include/footer.php" ); ?>
-
 

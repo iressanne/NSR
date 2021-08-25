@@ -15,11 +15,10 @@ body {
     margin: 0;
     padding: 0;
     position: relative;
-    background-color: lavender;
+    background-color: #fff;
 }
 
 header, footer {
-    /* background: #f00; */
     height: 5rem;
     width: 100%;
     padding: 1rem;
@@ -43,6 +42,21 @@ hr {
     border: .1px solid #000;
     opacity: 1;
     margin: 2rem 0;
+}
+
+#background__cover {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    z-index: -1;
+    opacity: .25;
+}
+
+#background__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* HEADER */
@@ -118,6 +132,39 @@ main {
     min-height: var(--container-height);
 }
 
+/* ARTICLES PIN */
+
+main > article {
+    margin-bottom: 4rem;
+}
+
+main > article figure {
+    position: relative;
+}
+
+main > article h3, main > article p {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #FFF;
+}
+
+main > article h3 {
+    top: 50%;
+    font-size: 3rem;
+}
+
+main > article p {
+    top: 60%;
+    font-size: 2rem;
+}
+
+main > article img {
+    width: calc(100vw - 10rem);
+    height: 80vh;
+    object-fit: cover;
+}
+
 /* FORM */
 
 form {
@@ -147,6 +194,7 @@ form p > *:not( :last-child ) {
 
 form img {
     width: 100%;
+    margin: 1rem 0;
 }
 
 .form-label {

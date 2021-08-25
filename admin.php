@@ -1,14 +1,14 @@
 <?php
 
-// Connexion à la base de données
 require( "config.php" );
+
+// Connexion à la base de données
 session_start();
 
 // Définit les ISSET
 $action = isset( $_GET['action'] ) ? $_GET['action'] : "";
 $user_username = isset( $_SESSION['user_username'] ) ? $_SESSION['user_username'] : "";
-
-$sort = isset( $_GET['sort'] ) && isset( $_GET['sort'] ) != "id" ? "post_".$_GET['sort'] : "id";
+$sort = isset( $_GET['sort'] ) ? ( $_GET['sort'] == "id" ? $_GET['sort'] : "post_".$_GET['sort'] ) : "id";
 $order = isset( $_GET['order'] ) ? $_GET['order'] : "";
 $order = $order != "" ? $order : ( $sort == "id" ? "DESC" : "ASC" );
 
@@ -40,8 +40,14 @@ switch ( $action ) {
     case 'deleteArticle':
         deleteArticle();
         break;
+    case 'pinArticle':
+        pinArticle();
+        break;
     case 'editUser':
         editUser();
+        break;
+    case 'editMain':
+        editMain();
         break;
     default:
         listArticles( $order, $sort );
@@ -83,6 +89,8 @@ function login() {
     if ( isset( $_POST['login'] ) ) {
 
         $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
+
+        var_dump( $_POST['login'] );
         
         // Check si username est vide
         $post_user = trim( $_POST[ "user_username" ] );
@@ -128,10 +136,6 @@ function login() {
                             $decrypted = password_hash( trim( $decrypted ), PASSWORD_DEFAULT );
 
                             if( password_verify( $password, $decrypted ) ) {
-
-                                // Password est bon, maintenant on démarre une nouvelle SESSION 
-                                // https://www.php.net/manual/fr/reserved.variables.session.php
-                                // session_start();
                                 
                                 // On stock les données dans les variables de session
                                 $_SESSION[ "loggedin" ] = true;
@@ -139,7 +143,6 @@ function login() {
                                 $_SESSION[ "user_username" ] = $username;
                                 
                                 // Et on redirige l'utilisateur vers sa welcome page
-                                // (Créer une page welcome.php)
                                 header( "location: admin.php" );
 
                             } else {
@@ -180,6 +183,7 @@ function logout() {
     unset( $_SESSION['loggedin'] );
     unset( $_SESSION['id'] );
     unset( $_SESSION['user_username'] );
+    session_destroy();
     header( "Location: admin.php" );
 
 }
@@ -239,8 +243,8 @@ function register() {
 
 function newArticle( $user_username ) {
 
-    // On récupère l'objet User si le username existe
-    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
+    // On récupère l'objet User si l'id existe
+    $user = isset( $_SESSION['id'] ) ? User::getById( $_SESSION['id'] ) : "";
 
     $results = array();
     $results['pageTitle'] = "Nouvel article";
@@ -271,8 +275,8 @@ function newArticle( $user_username ) {
 
 function editArticle() {
 
-    // On récupère l'objet User si le username existe
-    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
+    // On récupère l'objet User si l'id existe
+    $user = isset( $_SESSION['id'] ) ? User::getById( $_SESSION['id'] ) : "";
 
     $results = array();
     $results['pageTitle'] = "Editer un article";
@@ -295,11 +299,13 @@ function editArticle() {
 
         // Si l'utilisateur annule, alors redirection vers admin.php
         header( "Location: admin.php" );
+
     } else {
 
         // Contrairement à newArticle, on vient afficher le formulaire contenant les éléments de l'article sélectionné
         $results['article'] = Article::getById( (int)$_GET['articleId'] );
         require( TEMPLATE_PATH . "/admin/editArticle.php" );
+
     }
 
 }
@@ -317,11 +323,35 @@ function deleteArticle() {
 
 }
 
+function pinArticle() {
+
+    // On récupère l'objet User si l'id existe
+    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
+    $articleId = isset( $_GET['articleId'] ) ? $_GET['articleId'] : "";
+
+    $main = Main::getInformations();
+
+    if ( $articleId != $main->pin ) {
+        
+        $main->pin( $articleId );
+
+        header( "Location: admin.php?status=articlePinned" );
+        
+    } else {
+        
+        $main->pin( "" );
+
+        header( "Location: admin.php?status=articleUnpinned" );
+
+    }
+
+}
+
 
 function listArticles( $order, $sort ) {
 
-    // On récupère l'objet User si le username existe
-    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
+    // On récupère l'objet User si l'id existe
+    $user = isset( $_SESSION['id'] ) ? User::getById( $_SESSION['id'] ) : "";
 
     $results = array();
 
@@ -333,9 +363,8 @@ function listArticles( $order, $sort ) {
 
     }
 
-    $userList = $user->user_role ? "" : $user->user_username;
-
-    $data = Article::getList( 100000, $sort, $order, $userList );
+    $author = $user->user_role == "admin" ? "" : $user->user_username;
+    $data = Article::getList( 100000, $sort, $order, $author );
     $results['articles'] = $data['results'];
     $results['totalRows'] = $data['totalRows'];
     $results['pageTitle'] = "Tous vos articles";
@@ -346,8 +375,11 @@ function listArticles( $order, $sort ) {
 
     if ( isset( $_GET['status'] ) ) {
         if ( $_GET['status'] == "articleChangesSaved" ) $results['statusMessage'] = "<div class='alert alert-success' role='alert'>Vos modifications ont bien été enregistrées.</div>";
+        if ( $_GET['status'] == "articlePinned" ) $results['statusMessage'] = "<div class='alert alert-success' role='alert'>L'article a bien été mis en avant.</div>";
         if ( $_GET['status'] == "articleDeleted" ) $results['statusMessage'] = "<div class='alert alert-warning' role='alert'>Article supprimé.</div>";
-        if ( $_GET['status'] == "userChangesSaved" ) $results['userStatusMessage'] = "<div class='alert alert-success' role='alert'>Vos modifications ont bien été enregistrées.</div>";
+        if ( $_GET['status'] == "articleUnpinned" ) $results['statusMessage'] = "<div class='alert alert-warning' role='alert'>L'Article mis en avant a bien été retiré.</div>";
+        if ( $_GET['status'] == "userChangesSaved" ) $results['statusMessage'] = "<div class='alert alert-success' role='alert'>Vos modifications ont bien été enregistrées.</div>";
+        if ( $_GET['status'] == "mainChangesSaved" ) $results['statusMessage'] = "<div class='alert alert-success' role='alert'>Le site a bien été mis à jour.</div>";
     }
 
     require( TEMPLATE_PATH . "/admin/listArticles.php" );
@@ -357,8 +389,8 @@ function listArticles( $order, $sort ) {
 
 function editUser() {
 
-    // On récupère l'objet User si le username existe
-    $user = isset( $_SESSION['user_username'] ) ? User::getByUsername( $_SESSION['user_username'] ) : "";
+    // On récupère l'objet User si l'id existe
+    $user = isset( $_SESSION['id'] ) ? User::getById( $_SESSION['id'] ) : "";
 
     $results = array();
     $results[ 'pageTitle' ] = "Editer";
@@ -401,6 +433,38 @@ function editUser() {
         $results[ 'user' ] = User::getById( ( int )$_GET[ 'userId' ] );
 
         require( TEMPLATE_PATH . "/admin/editUser.php" );
+    }
+
+}
+
+
+function editMain() {
+
+    // On récupère l'objet User si l'id existe
+    $user = isset( $_SESSION['id'] ) ? User::getById( $_SESSION['id'] ) : "";
+
+    $main = Main::getInformations();
+
+    // $results = array();
+    $results[ 'pageTitle' ] = "Éditer le site";
+    $results[ 'formAction' ] = "editMain";
+
+    if ( isset( $_POST[ 'saveChanges' ] ) ) {
+        
+        // Mise à jour du main
+        $main->storeFormValues( $_POST );
+        $main->update( $_POST );
+        header( "Location: admin.php?status=mainChangesSaved" );
+
+    } elseif ( isset( $_POST[ 'cancel' ] ) ) {
+
+        // Si l'utilisateur annule, alors redirection vers admin.php
+        header( "Location: admin.php" );
+
+    } else {
+
+        require( TEMPLATE_PATH . "/admin/editMain.php" );
+        
     }
 
 }

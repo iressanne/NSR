@@ -116,11 +116,12 @@ class Article {
   */
 
   public static function getList( $numRows = 1000000, $sort = "id", $order = "DESC", $author = "" ) {
+
     // Connexion à la base de données
     $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
     // Sélection SQL des articles en fonction de la LIMIT
     $sql = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(post_date) AS post_date FROM posts";
-    $sql .= $author == "" ? null : " WHERE post_author LIKE $author";
+    $sql .= $author == "" ? null : " WHERE post_author LIKE '$author'";
     $sql .= " ORDER BY $sort $order LIMIT :numRows";
 
     $st = $conn->prepare( $sql );
