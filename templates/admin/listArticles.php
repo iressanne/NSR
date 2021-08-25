@@ -73,8 +73,7 @@
         <?php } ?>
 
             <a href="admin.php?action=newArticle" class="btn btn-primary btn-sm">Ajouter un article</a>
-            <?php if ( $user->user_role == "admin" ) echo "<a href='admin.php?action=pinArticle' class='btn btn-secondary btn-sm'>Mettre en avant un article</a>"; ?>
-
+           
         </aside>
 
     <?php } ?>

@@ -75,7 +75,11 @@ if( !empty( $tags ) ) {
                     <a class="navbar-brand" href="index.php"><?php echo !empty( $title ) ? $title : "NSR"; ?></a>
                 </div>
 
-                <div>
+                <div id="burger__menu">
+                    <img src="<?php echo UPLOAD_PATH . "burger.png"; ?>" alt="bouton menu" onclick="menu()">
+                </div>
+
+                <div id="menu" class="hidden">
                     <ul class="navbar-nav mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link" href="about.php">À propos</a>
@@ -92,6 +96,15 @@ if( !empty( $tags ) ) {
 
                 </div>
             </nav>
+
+            <script>
+                const menu = function() {
+                    // On déclare l'élément avec l'id #menu
+                    const menu = document.querySelector( "#menu" );
+                    // On intervertit sa classe .hidden
+                    menu.classList.toggle( 'hidden' );
+                }
+            </script>
 
         </header>
     

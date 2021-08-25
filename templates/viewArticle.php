@@ -1,16 +1,41 @@
-<?php include "templates/include/header.php" ?>
+<?php 
+    include "templates/include/header.php";
 
-    <main>
+    // On déclare la variable de l'article
+    $article = $results['article'];
+    $title = $article->post_title;
+?>
 
-        <h1><?php echo htmlspecialchars( $results['article']->post_title )?></h1>
+    <main class="article">
 
-        <div style="font-style: italic;"><?php echo htmlspecialchars( $results['article']->post_heading )?></div>
+        <?php if ( $cover = $article->post_cover ) { ?>
+            
+        <figure>
+            <?php
+                $cover = !strpos( $cover, "http" ) ? UPLOAD_PATH . $cover : $cover;
+                echo "<img src='$cover' alt='$title'>";
+            ?>
+            <h1><?php echo htmlspecialchars( $title )?></h1>
+            <div><?php echo htmlspecialchars( $article->post_heading )?></div>
+        </figure>
 
-        <div><?php echo $results['article']->post_content?></div>
+        <?php } else { ?>
 
-        <p>Publié le <?php echo date('j F Y', $results['article']->post_date)?></p>
+        <h1><?php echo htmlspecialchars( $title )?></h1>
+        <div style="font-style: italic;"><?php echo htmlspecialchars( $article->post_heading )?></div>
 
-        <p><a href="./">Retourner à la page d'accueil</a></p>
+        <?php } ?>
+
+
+        <div class="paragraph"><?php echo $article->post_content?></div>
+
+        <footer>
+
+            <p>Article publié le <?php echo date('j F Y', $article->post_date)?> par <a href="search.php?search=<?php echo $article->post_author ?>"><?php echo $article->post_author ?></a></p>
+
+            <p><a href="./">Retourner à la page d'accueil</a></p>
+
+        </footer>
 
     </main>
 

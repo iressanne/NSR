@@ -1,7 +1,7 @@
-<?php include "templates/include/header.php";
+<?php require( TEMPLATE_PATH . "/include/header.php" );
 
     // On récupère les variables pour conditionner le tri des articles
-    $sort = isset( $_GET['sort'] ) ? $_GET['sort'] : "date";
+    $sort = isset( $_GET['sort'] ) ? $_GET['sort'] : "id";
     // On règle la flèche de tri en fonction de la variable $order
     // &nbsp; équivaut à un espace fine insécable (pour éviter les retours à la ligne de petits caractères)
     // &#9650; et &#9660; correspondent aux flèches de classement
@@ -12,27 +12,27 @@
 
     <main class="archive">
 
-        <h1>Archives</h1>
+        <h2><?php echo $results['pageTitle'] ?></h2>
 
-        <p><small><?php echo $results['totalRows']?> article<?php echo ( $results['totalRows'] != 1 ) ? 's' : '' ?> au total.</small></p>
+        <p><small class="text-muted"><?php echo $results['totalRows']?> article<?php echo ( $results['totalRows'] != 1 ) ? 's' : '' ?> au total</small></p>
 
         <table class="table table-hover">
             <thead>
                 <tr>
                 <th scope="col">&nbsp;</th>
                 <th scope="col">
-                    <a href="./?action=archive&sort=date<?php if( $sort == "date" && $order == "DESC" ) echo "&order=ASC" ?>">
-                        Date<?php if( $sort == "date" ) echo $orderArrow ?>
+                    <a href="./index.php?action=archive&sort=id&order=<?php echo $sort == "id" && $order == "ASC" ? "DESC" : "ASC" ?>">
+                        Date<?php if( $sort == "id" ) echo $orderArrow ?>
                     </a>
                 </th>
                 <th scope="col">
-                    <a href="./?action=archive&sort=title<?php if( $sort == "title" && $order == "ASC" ) echo "&order=DESC" ?>">
+                    <a href="./index.php?action=archive&sort=title&order=<?php echo $sort == "title" && $order == "ASC" ? "DESC" : "ASC" ?>">
                         Article<?php if( $sort == "title" ) echo $orderArrow ?>
                     </a>
                 </th>
                 <th scope="col">&nbsp;</th>
                 <th scope="col">
-                    <a href="./?action=archive&sort=author<?php if( $sort == "author" && $order == "ASC" ) echo "&order=DESC" ?>">
+                    <a href="./index.php?action=archive&sort=author&order=<?php echo $sort == "author" && $order == "ASC" ? "DESC" : "ASC" ?>">
                         Auteur<?php if( $sort == "author" ) echo $orderArrow ?>
                     </a>
                 </th>
@@ -73,4 +73,4 @@
 
     </main>
 
-<?php include "templates/include/footer.php" ?>
+<?php require( TEMPLATE_PATH . "/include/footer.php" ); ?>

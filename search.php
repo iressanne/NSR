@@ -6,8 +6,16 @@
     require( "config.php" );
     require( TEMPLATE_PATH . "/include/header.php" );
 
-    $button = $_GET[ 'submit' ];
+    // On récupère la recherche effectuée
     $search = $_GET[ 'search' ];
+
+    // On récupère les variables pour conditionner le tri des articles
+    $sort = isset( $_GET['sort'] ) ? ( $_GET['sort'] == "id" ? $_GET['sort'] : "post_".$_GET['sort'] ) : "id";
+    $order = isset( $_GET['order'] ) ? $_GET['order'] : "";
+    $order = $order != "" ? $order : ( $sort == "id" ? "DESC" : "ASC" );
+
+    // On règle la flèche de tri en fonction de la variable $order
+    $orderArrow = $order == "ASC" ? "&nbsp;&#9650;" : "&nbsp;&#9660;";
 
     // Connexion à la base de données
     $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
@@ -19,7 +27,7 @@
         OR post_cover LIKE :search
         OR post_heading LIKE :search
         OR post_content LIKE :search
-        ORDER BY id DESC";
+        ORDER BY $sort $order";
 
     $st = $conn->prepare( $sql );
     $st->bindValue( ":search", "%$search%" );
@@ -49,10 +57,22 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Article</th>
+                <th scope="col">
+                    <a href="./search.php?search=<?php echo $search ?>&sort=id&order=<?php echo $sort == "id" && $order == "ASC" ? "DESC" : "ASC" ?>">
+                        Date<?php if( $sort == "id" ) echo $orderArrow ?>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="./search.php?search=<?php echo $search ?>&sort=title&order=<?php echo $sort == "post_title" && $order == "ASC" ? "DESC" : "ASC" ?>">
+                        Article<?php if( $sort == "post_title" ) echo $orderArrow ?>
+                    </a>
+                </th>
                 <th scope="col">Description</th>
-                <th scope="col">Auteur</th>
+                <th scope="col">
+                    <a href="./search.php?search=<?php echo $search ?>&sort=author&order=<?php echo $sort == "post_author" && $order == "ASC" ? "DESC" : "ASC" ?>">
+                        Auteur<?php if( $sort == "post_author" ) echo $orderArrow ?>
+                    </a>
+                </th>
             </tr>
         </thead>
 

@@ -1,13 +1,14 @@
 <?php
 
-// Initialize the session
+require( "config.php" );
+
+// initialisation de la session
 session_start();
 
-require( "config.php" );
 $action = isset( $_GET['action'] ) ? $_GET['action'] : "";
-$sort = isset( $GET['sort'] ) ? "post".$_GET['sort'] : "post_date";
+$sort = isset( $_GET['sort'] ) ? ( $_GET['sort'] == "id" ? $_GET['sort'] : "post_".$_GET['sort'] ) : "id";
 $order = isset( $_GET['order'] ) ? $_GET['order'] : "";
-$order = $order != "" ? $order : ( $sort == "post_date" ? "DESC" : "ASC" );
+$order = $order != "" ? $order : ( $sort == "id" ? "DESC" : "ASC" );
 
 switch ( $action ) {
   case 'archive':
@@ -25,7 +26,7 @@ function archive( $sort, $order ) {
   $data = Article::getList( 100000, $sort, $order );
   $results['articles'] = $data['results'];
   $results['totalRows'] = $data['totalRows'];
-  $results['pageTitle'] = "Article Archive | Widget News";
+  $results['pageTitle'] = "Archives";
   require( TEMPLATE_PATH . "/archive.php" );
 }
 
@@ -47,12 +48,10 @@ function homepage() {
   // On liste les articles
   $data = Article::getList( ARTICLES_LIMIT );
   $results['articles'] = $data['results'];
- 
 
   // on liste les auteurs
   $data = User::getTop( ARTICLES_LIMIT );
   $results['users'] = $data;
-
 
   require( TEMPLATE_PATH . "/homepage.php" );
 }
